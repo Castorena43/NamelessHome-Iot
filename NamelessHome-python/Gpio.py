@@ -46,6 +46,8 @@ class Gpio:
     def setPir(self):
         if self.pir.motion_detected:
             self.detectar.on()
+            time.sleep(5)
+            self.detectar.off()
             print('Movimiento')
         else:
             self.detectar.off()
