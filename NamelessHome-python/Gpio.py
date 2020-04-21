@@ -1,6 +1,7 @@
 from gpiozero import MotionSensor, LED, Servo, AngularServo
 import gpiozero
 import Adafruit_DHT
+import time
 class Gpio:
     def __init__(self):
         self.cuarto1 = LED(5)
@@ -24,21 +25,57 @@ class Gpio:
     
     def getCuarto1(self):
         return self.cuarto1
+
+    def setCuarto1(self,estado):
+        if estado == 'ON':
+            self.cuarto1.on()
+        elif estado == 'OFF':
+            self.cuarto1.off()
     
     def getCuarto2(self):
         return self.cuarto2
+
+    def setCuarto2(self,estado):
+        if estado == 'ON':
+            self.cuarto2.on()
+        elif estado == 'OFF':
+            self.cuarto2.off()
     
     def getCuarto3(self):
         return self.cuarto3
 
+    def setCuarto3(self,estado):
+        if estado == 'ON':
+            self.cuarto3.on()
+        elif estado == 'OFF':
+            self.cuarto3.off()
+
     def getCuarto4(self):
         return self.cuarto4
+
+    def setCuarto4(self,estado):
+        if estado == 'ON':
+            self.cuarto4.on()
+        elif estado == 'OFF':
+            self.cuarto4.off()
     
     def getCuarto5(self):
         return self.cuarto5
+
+    def setCuarto5(self,estado):
+        if estado == 'ON':
+            self.cuarto5.on()
+        elif estado == 'OFF':
+            self.cuarto5.off()
     
     def getRele(self):
         return self.relay
+    
+    def setRele(self,estado):
+        if estado == 'ON':
+            self.relay.on()
+        elif estado == 'OFF':
+            self.relay.off()
     
     def getPir(self):
         return self.pir
@@ -55,12 +92,24 @@ class Gpio:
     
     def getPuerta1(self):
         return self.puerta1
+
+    def setPuerta1(self,estado):
+        if estado == 'ON':
+            self.puerta1.max()
+        elif estado == 'OFF':
+            self.puerta1.min()
     
     def getPuerta2(self):
         return self.puerta2
     
     def getPuerta3(self):
         return self.puerta3
+
+    def setPuerta3(self,estado):
+        if estado == 'ON':
+            self.puerta3.max()
+        elif estado == 'OFF':
+            self.puerta3.min()
 
     def getDetectar(self):
         return self.detectar
@@ -73,7 +122,7 @@ class Gpio:
         if humidity is not None and temperature is not None:
             self.temperature = '%.0f'%(temperature)
             print(self.temperature)
-            if int(self.temperature) > 30:
+            if int(self.temperature) >= 30:
                 self.relayV.on()
             else:
                 self.relayV.off()            

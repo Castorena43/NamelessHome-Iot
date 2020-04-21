@@ -6,6 +6,10 @@ import websocket
 from threading import Thread
 import time
 import json
+from bd import Mongo
+i = Gpio()
+bd = Mongo()
+
 
 class Interface:
     def __init__(self):
@@ -20,6 +24,14 @@ class Interface:
                                 keep_running=True)
 
     def run(self):
+        i.setCuarto1(bd.getData('leds','Cuarto1'))
+        i.setCuarto2(bd.getData('leds','Cuarto2'))
+        i.setCuarto3(bd.getData('leds','Cuarto3'))
+        i.setCuarto4(bd.getData('leds','Cuarto4'))
+        i.setCuarto5(bd.getData('leds','Cuarto5'))
+        i.setPuerta1(bd.getData('doors','Puerta1'))
+        i.setPuerta3(bd.getData('doors','Puerta2'))
+        i.setRele(bd.getData('alarms','Alarma1'))
         try:
             while True:
                 # self._adafruit.cuarto(self._gpio.getCuarto1(),'cuarto1')
@@ -40,7 +52,7 @@ class Interface:
                 self.ws.run_forever()
         except KeyboardInterrupt:
             sys.exit(1)
-i = Gpio()
+
 def on_message(ws, message):
     try:
         r = json.loads(message)
@@ -66,7 +78,7 @@ def on_message(ws, message):
                 i.getCuarto5().on()
             elif r['d']['data'] == "Cuarto5 OFF":
                 i.getCuarto5().off()
-        if r['d']['event'] == "puertas":
+        if r['d']['event'] == "doors":
             if r['d']['data'] == "Puerta1 ON":
                 i.getPuerta1().max()
             elif r['d']['data'] == "Puerta1 OFF":
@@ -75,10 +87,9 @@ def on_message(ws, message):
                 i.getPuerta3().max()
             elif r['d']['data'] == "Puerta2 OFF":
                 i.getPuerta3().min()
-        if r['d']['event'] == "alarma":
+        if r['d']['event'] == "alarms":
             if r['d']['data'] == "ON":
                 i.getRele().on()
-                i.setPir()
             elif r['d']['data'] == "OFF":
                 i.getRele().off()
     except:
@@ -95,11 +106,10 @@ def on_close(ws):
 
 def on_open(ws):
     def run(*args):
-        ws.send('{"t":1,"d":{"topic":"chat"}}')
-        i.setPir()
+        ws.send('{"t":1,"d":{"topic":"home"}}')
         data = i.setTemperatura()
         if data == True:
-            ws.send('{"t":7,"d":{"topic":"chat","event":"temperatura","data":"'+ i.getTemperatura() +'"}}')
+            ws.send('{"t":7,"d":{"topic":"home","event":"weather","data":"'+ i.getTemperatura() +'"}}')
         #     self._adafruit.temperatura(self._gpio.getTemperatura(),'sensor-ht')
         # for i in range(3):
         #     ws.send('{"t":7,"d":{"topic":"chat","event":"message","data":"Hola python"}}')
@@ -110,3 +120,10 @@ def on_open(ws):
         print("Thread terminating...")
 
     Thread(target=run).start()
+    Thread(target=Alarma).start()
+
+
+def Alarma():
+    while True:
+        i.setPir()
+        time.sleep(10)
